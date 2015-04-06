@@ -283,7 +283,7 @@
 
         imgHero = new Image();
         imgHero.onload = chargement;
-        imgHero.src = "img/player.png";
+        imgHero.src = "img/braid.png";
 
     }
 
