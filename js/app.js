@@ -12,8 +12,6 @@
         imgHero, imgBg, imgKey, imgDoor, imgCrate,
     //variables des objets
         hero, key, door, gameTxt, unePlateform,
-    //variables contenant des tableaux
-        crates, platforms,
     //variables de direction
         left, right,
     //deplacement en y
@@ -37,7 +35,32 @@
     //Positions des plateformes
         platformW = [188, 82, 82, 82],
         platformX = [0, 188, 378, 462],
-        platformY = [560, 468, 440, 500];
+        platformY = [560, 468, 440, 500],
+
+        platforms_datas = [
+            {
+                width : 188,
+                x : 0,
+                y : 560
+            },
+            {
+                width : 82,
+                x : 188,
+                y : 468
+            },
+            {
+                width : 82,
+                x : 378,
+                y : 440
+            },
+            {
+                width : 82,
+                x : 462,
+                y : 500
+            }
+        ];
+
+
 
     /**
      * Gestion du clavier
@@ -82,12 +105,19 @@
         vx = 0;
     }
 
+    /**
+     * end of game
+     */
     function end() {
         play = false;
 
         hero.visible = false;
         stage.update();
     }
+
+    /**
+     * replay function
+     */
     function rejouer() {
         canvas.onclick = null;
         hero.visible = true;
@@ -105,6 +135,10 @@
         hero.gotoAndStop("idle");
         stage.update();
     }
+
+    /**
+     * game over
+     */
     function gameOver() {
         gameTxt = new createjs.Text("Game Over\n\n", "36px Arial", "#000");
         gameTxt.text += "Click to play again.";
@@ -131,6 +165,10 @@
             return true;
         }
     }*/
+
+    /**
+     * Jump function
+     */
     function jump() {
         if (jumping === false && inAir === false) {
             hero.gotoAndStop("jump");
@@ -141,6 +179,9 @@
         }
     }
 
+    /**
+     * Movements function
+     */
     function deplacement() {
         if (play) {
             vy += gravity; //apply gravity to downward motion
@@ -177,6 +218,9 @@
 
     }
 
+    /**
+     * allCollisions
+     */
     function allCollisions() {
         var i;
         inAir = true;
@@ -243,13 +287,12 @@
 
 
         //creation des plateformes
-        platforms = [];
-        for (i = 0; i < platformW.length; i += 1) {
-            platform = new Platform(platformW[i], 20);
+        for (i = 0; i < platforms_datas.length; i += 1) {
+            platform = new Platform(platforms_datas[i].width, 20);
             platforms.push(platform);
             stage.addChild(platform);
-            platform.x = platformX[i];
-            platform.y = platformY[i];
+            platform.x = platforms_datas[i].x;
+            platform.y = platforms_datas[i].y;
         }
 
 
@@ -259,6 +302,7 @@
 
         //Ticker.setFPS(30);
         createjs.Ticker.addEventListener("tick", tick);
+        createjs.Ticker.setFPS(28);
         stage.update();
     }
 
@@ -283,7 +327,7 @@
 
         imgHero = new Image();
         imgHero.onload = chargement;
-        imgHero.src = "img/braid.png";
+        imgHero.src = "img/player2.png";
 
     }
 

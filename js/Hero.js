@@ -4,24 +4,24 @@
 	function Hero(imgHero) { this.initialize(imgHero); }
 
 	var spriteSheet,
-		heroWidth = 65,
-		heroHeight = 75,
+		heroWidth = 59,
+		heroHeight = 80,
 		heroRegX = heroWidth / 2,
 		heroRegY = heroHeight;
 
 	Hero.prototype = new createjs.Sprite();
-	// constructors:
+// constructors:
 	Hero.prototype.Sprite_initialize = Hero.prototype.initialize;	//unique to avoid overiding base class
-	// public methods:
+// public methods:
 	Hero.prototype.initialize = function(imgHero) {
 		spriteSheet  = new createjs.SpriteSheet({
 			images: [imgHero],
 			frames: {width: heroWidth, height: heroHeight, regX: heroRegX, regY: heroRegY},
 			animations: {
-				walk: [0, 26, "walk"],
-				idle: [21, 21, "idle"],
+				walk: [2, 15, "walk"],
+				idle: [0, 0, "idle"],
 				looking: [1, 1, "looking"],
-				jump: [26, 26,"jump"]
+				jump: [19, 19,"jump"]
 			}
 		});
 		this.constructor(spriteSheet);
