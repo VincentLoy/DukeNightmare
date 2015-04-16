@@ -5,7 +5,7 @@
 (function () {
     'use strict';
     //variables des touches
-    var KEYCODE_SPACE = 32, KEYCODE_LEFT = 37, KEYCODE_RIGHT = 39, NB_ELT_TO_LOAD = 2,
+    var KEYCODE_SPACE = 32, KEYCODE_LEFT = 37, KEYCODE_RIGHT = 39, NB_ELT_TO_LOAD = 3,
         canvas,
         stage,
     //variables des chemins des images
@@ -36,7 +36,7 @@
         platformW = [188, 82, 82, 82],
         platformX = [0, 188, 378, 462],
         platformY = [560, 468, 440, 500],
-
+        platforms,
         platforms_datas = [
             {
                 width : 188,
@@ -57,8 +57,51 @@
                 width : 82,
                 x : 462,
                 y : 500
+            },
+            {
+                width : 260,
+                x : 640,
+                y : 380
+            },
+            {
+                width : 260,
+                x : 260,
+                y : 248
+            },
+            {
+                width : 260,
+                x : 0,
+                y : 176
+            },
+            {
+                width : 220,
+                x : 460,
+                y : 79
+            },
+            {
+                width : 260,
+                x : 680,
+                y : 100
             }
-        ];
+        ],
+        trigger,
+        triggers,
+        sounds_triggers = [
+            {
+                height : 150,
+                volume : 0.3,
+                x : 200,
+                y : 320
+            }
+        ],
+        /* AUDIO */
+        sound_AmbiancePath,
+        sound_SpeakPath1,
+        sound_horrorPath1,
+        sound_ambiance,
+        sound_voice1,
+        sound_horror1;
+
 
 
 
@@ -173,7 +216,7 @@
         if (jumping === false && inAir === false) {
             hero.gotoAndStop("jump");
             hero.y -= 20;
-            vy = -25;
+            vy = -29;
             jumping = true;
             animPersonnage = false;
         }
@@ -222,9 +265,12 @@
      * allCollisions
      */
     function allCollisions() {
-        var i;
+        var i, j;
         inAir = true;
 
+        /**
+         * Collision w/ platforms
+         */
         for (i = 0; i < platforms.length; i += 1) {
             //while( i < platforms.length && inAir==true){ //la boucle while est plus efficace mais pas obligatoire pour vous
             if (hero.y >= platforms[i].y && hero.y <= (platforms[i].y + platforms[i].height) && hero.x > platforms[i].x && hero.x < (platforms[i].x + platforms[i].width)) {
@@ -245,6 +291,23 @@
              }*/
 
             //i++; //pour la boucle while
+        }
+
+        /**
+         * Collision w/ platforms
+         */
+        for (j = 0; j < triggers.length; j += 1) {
+
+            //while( i < platforms.length && inAir==true){ //la boucle while est plus efficace mais pas obligatoire pour vous
+            if (hero.y >= triggers[j].y && hero.y <= (triggers[j].y + triggers[j].height) && hero.x > triggers[j].x && hero.x < (triggers[j].x + triggers[j].width)) {
+                var that = triggers[j];
+                console.log("sound collision");
+                if (that.disabled === false) {
+                    console.log("soundsdzdzdzdzsss");
+                    that.sound.play();
+                    that.disabled = true;
+                }
+            }
         }
 
         //le héros est il en bas du canvas
@@ -287,6 +350,7 @@
 
 
         //creation des plateformes
+        platforms = [];
         for (i = 0; i < platforms_datas.length; i += 1) {
             platform = new Platform(platforms_datas[i].width, 20);
             platforms.push(platform);
@@ -294,6 +358,16 @@
             platform.x = platforms_datas[i].x;
             platform.y = platforms_datas[i].y;
         }
+
+        triggers = [];
+        for (i = 0; i < sounds_triggers.length; i += 1) {
+            trigger = new SoundTrigger(sounds_triggers[i].height, sound_horror1, sounds_triggers[i].volume);
+            triggers.push(trigger);
+            stage.addChild(trigger);
+            trigger.x = sounds_triggers[i].x;
+            trigger.y = sounds_triggers[i].y;
+        }
+
 
 
         //register key functions
@@ -304,6 +378,10 @@
         createjs.Ticker.addEventListener("tick", tick);
         createjs.Ticker.setFPS(28);
         stage.update();
+
+        setTimeout(function () {
+            speak();
+        }, 750);
     }
 
     function chargement() {
@@ -312,22 +390,50 @@
         if (loaded === NB_ELT_TO_LOAD) {
             console.log('loaded');
             jouer();
+            sound_ambiance.play();
         }
+    }
+
+    function speak() {
+        hero.gotoAndStop('looking');
+        sound_voice1.play();
+
+        sound_voice1.onended = function () {
+            hero.gotoAndStop('idle');
+        };
+    }
+
+    function loadAudio(sound, volume, preloader) {
+        var audio = new Audio(sound);
+        audio.volume = volume;
+        preloader.loadFile(sound);
+        return audio;
     }
 
 
     function init() {
-
         canvas = document.getElementById("canvas");
         stage = new createjs.Stage(canvas);
 
+        var preload = new createjs.LoadQueue();
+        preload.addEventListener('fileload', chargement);
+
         imgBg = new Image();
-        imgBg.onload = chargement;
         imgBg.src = "img/scene.jpg";
+        preload.loadFile(imgBg.src);
 
         imgHero = new Image();
-        imgHero.onload = chargement;
         imgHero.src = "img/player2.png";
+        preload.loadFile(imgHero.src);
+
+        // sounds
+        sound_AmbiancePath = "audio/ambiance.mp3";
+        sound_SpeakPath1 = "audio/voices/vacation.mp3";
+        sound_horrorPath1 = "audio/horror-cry.mp3";
+
+        sound_ambiance = loadAudio(sound_AmbiancePath, 0.5, preload);
+        sound_voice1 = loadAudio(sound_SpeakPath1, 0.5, preload);
+        sound_horror1 = loadAudio(sound_horrorPath1, 0.5, preload);
 
     }
 
