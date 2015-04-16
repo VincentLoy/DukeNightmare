@@ -11,7 +11,7 @@
     //variables des chemins des images
         imgHero, imgBg, imgPrincess,
     //variables des objets
-        hero, key, door, gameTxt, princess,
+        hero, gameTxt, princess,
     //variables de direction
         left, right,
     //deplacement en y
@@ -26,16 +26,12 @@
         inAir = false,
     //variable permettant d'animer le héros
         animPersonnage = false,
+        speaking = false,
     //variable permettant de charger les éléments sur la scène
         loaded = 0,
-    //variable pour connaître le centre du hero
-        heroCenter,
     //variable pour rejouer
         play = true,
     //Positions des plateformes
-        platformW = [188, 82, 82, 82],
-        platformX = [0, 188, 378, 462],
-        platformY = [560, 468, 440, 500],
         platforms,
         platforms_datas = [
             {
@@ -124,15 +120,15 @@
             e = window.event;
         }
         switch (e.keyCode) {
-            case KEYCODE_LEFT:
-                left = true;
-                break;
-            case KEYCODE_RIGHT:
-                right = true;
-                break;
-            case KEYCODE_SPACE:
-                jump();
-                break;
+        case KEYCODE_LEFT:
+            left = true;
+            break;
+        case KEYCODE_RIGHT:
+            right = true;
+            break;
+        case KEYCODE_SPACE:
+            jump();
+            break;
         }
     }
 
@@ -143,12 +139,16 @@
     function handleKeyUp(e) {
         if (!e) { e = window.event; }
         switch (e.keyCode) {
-            case KEYCODE_LEFT:
-                left = false;
-                break;
-            case KEYCODE_RIGHT:
-                right = false;
-                break;
+        case KEYCODE_LEFT:
+            left = false;
+            break;
+        case KEYCODE_RIGHT:
+            right = false;
+            break;
+        case 83:
+            speak();
+            hero.gotoAndPlay('looking');
+            break;
         }
 
         animPersonnage = false;
@@ -176,8 +176,6 @@
         hero.visible = true;
         hero.x = 80;
         hero.y = 400;
-        door.visible = true;
-        key.visible = true;
         stage.removeChild(gameTxt);
         play = true;
         jumping = false;
@@ -264,6 +262,10 @@
                 animPersonnage = true;
             }
 
+            if (speaking) {
+                hero.gotoAndPlay('looking');
+            }
+
             hero.x += vx;
 
             if (animPersonnage) {
@@ -324,11 +326,12 @@
         /**
          * Collision w/ platforms
          */
+        var that;
         for (j = 0; j < triggers.length; j += 1) {
 
             //while( i < platforms.length && inAir==true){ //la boucle while est plus efficace mais pas obligatoire pour vous
             if (hero.y >= triggers[j].y && hero.y <= (triggers[j].y + triggers[j].height) && hero.x > triggers[j].x && hero.x < (triggers[j].x + triggers[j].width)) {
-                var that = triggers[j];
+                that = triggers[j];
                 if (that.disabled === false) {
                     that.sound.play();
                     that.disabled = true;
@@ -347,12 +350,36 @@
     }
 
     function tick() {
-        heroCenter = hero.y - 40;
+        //heroCenter = hero.y - 40;
         if (play) {
             deplacement();
             allCollisions();
         }
         stage.update();
+    }
+
+    /**
+     *
+     * @returns Audio
+     */
+    function speakRandom() {
+        var min = 0,
+            max = voices_array.length,
+            random = Math.floor(Math.random() * max) + min;
+
+        return voices_array[random];
+    }
+
+    function speak() {
+        var sentence = speakRandom();
+
+        speaking = true;
+        sentence.play();
+
+        sentence.onended = function () {
+            hero.gotoAndStop('idle');
+            speaking = false;
+        };
     }
 
     function jouer() {
@@ -449,19 +476,6 @@
             jouer();
             sound_ambiance.play();
         }
-    }
-
-    function speak() {
-        hero.gotoAndStop('looking');
-        sound_voice1.play();
-
-        sound_voice1.onended = function () {
-            hero.gotoAndStop('idle');
-        };
-    }
-
-    function speakRandom() {
-        //random voices
     }
 
     /**
