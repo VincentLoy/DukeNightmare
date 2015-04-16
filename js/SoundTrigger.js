@@ -1,5 +1,5 @@
 (function(window) {
-	function SoundTrigger(h, sound, volume) {
+	function SoundTrigger(h, sound) {
 		this.width = 50;
 		this.height = h;
 		this.sound = sound;
@@ -21,7 +21,7 @@
 	SoundTrigger.prototype.makeShape = function() {
 		//draw body
 		var g = this.platformBody.graphics;
-		var debug = true;
+		var debug = false;
 		if (debug) {
 			g.setStrokeStyle(1);
 			g.beginStroke("#d35400");

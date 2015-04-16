@@ -5,13 +5,13 @@
 (function () {
     'use strict';
     //variables des touches
-    var KEYCODE_SPACE = 32, KEYCODE_LEFT = 37, KEYCODE_RIGHT = 39, NB_ELT_TO_LOAD = 3,
+    var KEYCODE_SPACE = 32, KEYCODE_LEFT = 37, KEYCODE_RIGHT = 39, NB_ELT_TO_LOAD = 13,
         canvas,
         stage,
     //variables des chemins des images
-        imgHero, imgBg, imgKey, imgDoor, imgCrate,
+        imgHero, imgBg, imgPrincess,
     //variables des objets
-        hero, key, door, gameTxt, unePlateform,
+        hero, key, door, gameTxt, princess,
     //variables de direction
         left, right,
     //deplacement en y
@@ -84,23 +84,33 @@
                 y : 100
             }
         ],
-        trigger,
-        triggers,
-        sounds_triggers = [
-            {
-                height : 150,
-                volume : 0.3,
-                x : 200,
-                y : 320
-            }
-        ],
-        /* AUDIO */
+    /* AUDIO */
         sound_AmbiancePath,
+        voices_array,
         sound_SpeakPath1,
+        sound_SpeakPath2,
+        sound_SpeakPath3,
+        sound_SpeakPath4,
+        sound_SpeakPath5,
         sound_horrorPath1,
         sound_ambiance,
         sound_voice1,
-        sound_horror1;
+        sound_voice2,
+        sound_voice3,
+        sound_voice4,
+        sound_voice5,
+        sound_cry_path_1,
+        sound_cry_path_2,
+        sound_cry_1,
+        sound_cry_2,
+        sound_horror1,
+        sound_help_path,
+        sound_help,
+        sound_walking_path,
+        sound_walking,
+        trigger,
+        triggers,
+        sounds_triggers;
 
 
 
@@ -114,15 +124,15 @@
             e = window.event;
         }
         switch (e.keyCode) {
-        case KEYCODE_LEFT:
-            left = true;
-            break;
-        case KEYCODE_RIGHT:
-            right = true;
-            break;
-        case KEYCODE_SPACE:
-            jump();
-            break;
+            case KEYCODE_LEFT:
+                left = true;
+                break;
+            case KEYCODE_RIGHT:
+                right = true;
+                break;
+            case KEYCODE_SPACE:
+                jump();
+                break;
         }
     }
 
@@ -133,12 +143,12 @@
     function handleKeyUp(e) {
         if (!e) { e = window.event; }
         switch (e.keyCode) {
-        case KEYCODE_LEFT:
-            left = false;
-            break;
-        case KEYCODE_RIGHT:
-            right = false;
-            break;
+            case KEYCODE_LEFT:
+                left = false;
+                break;
+            case KEYCODE_RIGHT:
+                right = false;
+                break;
         }
 
         animPersonnage = false;
@@ -201,13 +211,13 @@
      * @returns {boolean}
      */
     /*function collisionHero(xPos, yPos, Radius) {
-        var distX = xPos - hero.x,
-            distY = yPos - heroCenter,
-            distR = Radius + 20;
-        if (distX * distX + distY * distY <= distR * distR) {
-            return true;
-        }
-    }*/
+     var distX = xPos - hero.x,
+     distY = yPos - heroCenter,
+     distR = Radius + 20;
+     if (distX * distX + distY * distY <= distR * distR) {
+     return true;
+     }
+     }*/
 
     /**
      * Jump function
@@ -256,9 +266,27 @@
 
             hero.x += vx;
 
-            //vx=vx*0.5;
+            if (animPersonnage) {
+                sound_walking.play();
+            } else {
+                sound_walking.pause();
+            }
         }
 
+    }
+
+    function loadPrincess() {
+        if (!stage.contains(princess)) {
+            princess = new Hero(imgPrincess);
+            princess.x = 800;
+            princess.y = 380;
+            stage.addChild(princess);
+
+            setTimeout(function () {
+                console.log('have to fade out princess');
+                createjs.Tween.get(princess).to({alpha: 0}, 1000);
+            }, 3000);
+        }
     }
 
     /**
@@ -301,11 +329,13 @@
             //while( i < platforms.length && inAir==true){ //la boucle while est plus efficace mais pas obligatoire pour vous
             if (hero.y >= triggers[j].y && hero.y <= (triggers[j].y + triggers[j].height) && hero.x > triggers[j].x && hero.x < (triggers[j].x + triggers[j].width)) {
                 var that = triggers[j];
-                console.log("sound collision");
                 if (that.disabled === false) {
-                    console.log("soundsdzdzdzdzsss");
                     that.sound.play();
                     that.disabled = true;
+                }
+
+                if (that.special === 'loadPrincess') {
+                    loadPrincess();
                 }
             }
         }
@@ -339,6 +369,30 @@
         hero.y = 550;
         stage.addChild(hero);
 
+        sounds_triggers = [
+            {
+                height : 150,
+                x : 200,
+                y : 320,
+                sound : sound_cry_1,
+                special : null
+            },
+            {
+                height : 150,
+                x : 400,
+                y : 290,
+                sound : sound_cry_2,
+                special : null
+            },
+            {
+                height : 150,
+                x : 650,
+                y : 230,
+                sound : sound_help,
+                special : 'loadPrincess'
+            }
+        ];
+
         //une plateforme
         /* unePlateform = new Platform(300,20);
 
@@ -361,12 +415,15 @@
 
         triggers = [];
         for (i = 0; i < sounds_triggers.length; i += 1) {
-            trigger = new SoundTrigger(sounds_triggers[i].height, sound_horror1, sounds_triggers[i].volume);
+            trigger = new SoundTrigger(sounds_triggers[i].height, sounds_triggers[i].sound);
             triggers.push(trigger);
             stage.addChild(trigger);
             trigger.x = sounds_triggers[i].x;
             trigger.y = sounds_triggers[i].y;
+            trigger.special = sounds_triggers[i].special;
         }
+
+        console.log(triggers);
 
 
 
@@ -403,9 +460,28 @@
         };
     }
 
-    function loadAudio(sound, volume, preloader) {
+    function speakRandom() {
+        //random voices
+    }
+
+    /**
+     * return an Audio Object
+     * @param sound
+     * @param volume
+     * @param preloader
+     * @param repeat
+     * @param type_voice
+     * @returns {Audio}
+     */
+    function loadAudio(sound, volume, preloader, repeat, type_voice) {
         var audio = new Audio(sound);
         audio.volume = volume;
+        if (repeat) {
+            audio.repeat = true;
+        }
+        if (type_voice) {
+            voices_array.push(audio);
+        }
         preloader.loadFile(sound);
         return audio;
     }
@@ -414,6 +490,8 @@
     function init() {
         canvas = document.getElementById("canvas");
         stage = new createjs.Stage(canvas);
+
+        voices_array = [];
 
         var preload = new createjs.LoadQueue();
         preload.addEventListener('fileload', chargement);
@@ -426,15 +504,36 @@
         imgHero.src = "img/player2.png";
         preload.loadFile(imgHero.src);
 
+        imgPrincess = new Image();
+        imgPrincess.src = "img/princess.png";
+        preload.loadFile(imgPrincess.src);
+
         // sounds
         sound_AmbiancePath = "audio/ambiance.mp3";
+
         sound_SpeakPath1 = "audio/voices/vacation.mp3";
-        sound_horrorPath1 = "audio/horror-cry.mp3";
+        sound_SpeakPath2 = "audio/voices/du_letsrock.mp3";
+        sound_SpeakPath3 = "audio/voices/iamtheking.mp3";
+        sound_SpeakPath4 = "audio/voices/timeto.mp3";
+        sound_SpeakPath5 = "audio/voices/ballsofsteel.mp3";
+        sound_walking_path = "audio/step.mp3";
 
-        sound_ambiance = loadAudio(sound_AmbiancePath, 0.5, preload);
-        sound_voice1 = loadAudio(sound_SpeakPath1, 0.5, preload);
-        sound_horror1 = loadAudio(sound_horrorPath1, 0.5, preload);
+        sound_cry_path_1 = "audio/cry-1.mp3";
+        sound_cry_path_2 = "audio/cry-2.mp3";
+        sound_help_path = "audio/help-me.mp3";
 
+        sound_ambiance = loadAudio(sound_AmbiancePath, 0.5, preload, true, false);
+
+        sound_voice1 = loadAudio(sound_SpeakPath1, 0.2, preload, false, true);
+        sound_voice2 = loadAudio(sound_SpeakPath2, 0.2, preload, false, true);
+        sound_voice3 = loadAudio(sound_SpeakPath3, 0.2, preload, false, true);
+        sound_voice4 = loadAudio(sound_SpeakPath4, 0.2, preload, false, true);
+        sound_voice5 = loadAudio(sound_SpeakPath5, 0.2, preload, false, true);
+        sound_walking = loadAudio(sound_walking_path, 0.2, preload, true, false);
+
+        sound_cry_1 = loadAudio(sound_cry_path_1, 0.5, preload, false, false);
+        sound_cry_2 = loadAudio(sound_cry_path_2, 0.5, preload, false, false);
+        sound_help = loadAudio(sound_help_path, 0.5, preload, false, false);
     }
 
     window.onload = init;
