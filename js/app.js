@@ -5,7 +5,7 @@
 (function () {
     'use strict';
     //variables des touches
-    var KEYCODE_SPACE = 32, KEYCODE_LEFT = 37, KEYCODE_RIGHT = 39, NB_ELT_TO_LOAD = 20,
+    var KEYCODE_SPACE = 32, KEYCODE_LEFT = 37, KEYCODE_RIGHT = 39, NB_ELT_TO_LOAD = 25,
         canvas,
         stage,
         imgGameOver,

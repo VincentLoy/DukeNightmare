@@ -1,34 +1,38 @@
 <!doctype html>
 <html>
 <head>
-<meta charset="UTF-8">
-<title>EaselJS Example: Platformer Game</title>
+    <meta charset="UTF-8">
+    <title>EaselJS Example: Platformer Game</title>
+    <script>
 
-<style>body {background-color: #000;}</style>
-
-
-<!--<link href='http://fonts.googleapis.com/css?family=Covered+By+Your+Grace' rel='stylesheet' type='text/css'>-->
-
-<link href='font/stylesheet.css' rel='stylesheet' type='text/css'>
-<script>
-
-</script>
+    </script>
 
 
 
-<style>
-	h1{
-		font-family:'rotorcapregular';
-		color:red;
-	}
-	canvas {
-		display: block;
-		margin: auto;
-	}
-</style>
+    <style>
+        body {
+            background: #000;
+        }
+        h1{
+            font-family:'rotorcapregular';
+            color:red;
+        }
+        canvas {
+            display: block;
+            margin: auto;
+        }
+
+        header {
+            text-align: center;
+        }
+    </style>
 </head>
 <body>
-		<canvas id="canvas" width="900" height="600"></canvas>
+<header>
+    <img src="img/instructions.png" alt="Duke Nightmare - The Game"/>
+</header>
+
+<canvas id="canvas" width="900" height="600"></canvas>
 
 <script src="js/lib/easeljs-0.8.0.min.js"></script>
 <script src="js/lib/tweenjs-0.6.0.min.js"></script>
