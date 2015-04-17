@@ -15,7 +15,7 @@
     //variables des chemins des images
         imgHero, imgBg, imgPrincess,
     //variables des objets
-        hero, gameTxt, princess,
+        hero, princess,
     //variables de direction
         left, right,
     //deplacement en y
@@ -162,15 +162,15 @@
             e = window.event;
         }
         switch (e.keyCode) {
-            case KEYCODE_LEFT:
-                left = true;
-                break;
-            case KEYCODE_RIGHT:
-                right = true;
-                break;
-            case KEYCODE_SPACE:
-                jump();
-                break;
+        case KEYCODE_LEFT:
+            left = true;
+            break;
+        case KEYCODE_RIGHT:
+            right = true;
+            break;
+        case KEYCODE_SPACE:
+            jump();
+            break;
         }
     }
 
@@ -181,16 +181,16 @@
     function handleKeyUp(e) {
         if (!e) { e = window.event; }
         switch (e.keyCode) {
-            case KEYCODE_LEFT:
-                left = false;
-                break;
-            case KEYCODE_RIGHT:
-                right = false;
-                break;
-            case 83:
-                speak();
-                hero.gotoAndPlay('looking');
-                break;
+        case KEYCODE_LEFT:
+            left = false;
+            break;
+        case KEYCODE_RIGHT:
+            right = false;
+            break;
+        case 83:
+            speak();
+            hero.gotoAndPlay('looking');
+            break;
         }
 
         animPersonnage = false;
@@ -201,18 +201,21 @@
     }
 
     /**
-     * end of game
+     * display coins on scene
      */
-    function end(win) {
-        play = false;
+    function displayCoins() {
+        coins_array = [];
+        var i;
+        for (i = 0; i < coinsPositions.length; i += 1) {
+            coin = new Coin(coinPath);
+            coins_array.push(coin);
+            stage.addChild(coin);
+            coin.x = coinsPositions[i].x;
+            coin.y = coinsPositions[i].y;
 
-        hero.visible = false;
-        stage.update();
-        canvas.onclick = rejouer;
-        if (win) {
-            stage.addChild(winObject);
-        } else {
-            stage.addChild(gameOverObject);
+            coin.sound = sound_coin;
+
+            coin.gotoAndPlay('rotate');
         }
     }
 
@@ -251,6 +254,22 @@
     }
 
     /**
+     * end of game
+     */
+    function end(win) {
+        play = false;
+
+        hero.visible = false;
+        stage.update();
+        canvas.onclick = rejouer;
+        if (win) {
+            stage.addChild(winObject);
+        } else {
+            stage.addChild(gameOverObject);
+        }
+    }
+
+    /**
      * game over
      */
     function gameOver() {
@@ -259,22 +278,6 @@
         end(false);
         canvas.onclick = rejouer;
     }
-
-    /**
-     * Collision avec le joueur
-     * @param xPos
-     * @param yPos
-     * @param Radius
-     * @returns {boolean}
-     */
-    /*function collisionHero(xPos, yPos, Radius) {
-     var distX = xPos - hero.x,
-     distY = yPos - heroCenter,
-     distR = Radius + 20;
-     if (distX * distX + distY * distY <= distR * distR) {
-     return true;
-     }
-     }*/
 
     /**
      * Jump function
@@ -400,7 +403,7 @@
                 that.sound.play();
                 stage.removeChild(that);
 
-                if (coinsCounter === 3) {
+                if (coinsCounter === coinsToWin) {
                     displayDoor = true;
                     stage.addChild(door);
                 }
@@ -409,7 +412,7 @@
 
         if (displayDoor) {
             //console.log(door.x + ' ' + door.y + ' ' + door.width);
-            if (hero.y >= door.y+10 && hero.y <= (door.y+10 + door.height+10) && hero.x > door.x+10 && hero.x < (door.x+10 + door.width+10)) {
+            if (hero.y >= door.y + 10 && hero.y <= (door.y + 10 + door.height + 10) && hero.x > door.x + 10 && hero.x < (door.x + 10 + door.width + 10)) {
                 end(true);
             }
         }
@@ -427,22 +430,6 @@
             allCollisions();
         }
         stage.update();
-    }
-
-    function displayCoins() {
-        coins_array = [];
-        var i;
-        for (i = 0; i < coinsPositions.length; i += 1) {
-            coin = new Coin(coinPath);
-            coins_array.push(coin);
-            stage.addChild(coin);
-            coin.x = coinsPositions[i].x;
-            coin.y = coinsPositions[i].y;
-
-            coin.sound = sound_coin;
-
-            coin.gotoAndPlay('rotate');
-        }
     }
 
     /**
@@ -580,12 +567,12 @@
 
     /**
      * return an Audio Object
-     * @param sound
-     * @param volume
-     * @param preloader
-     * @param repeat
-     * @param type_voice
-     * @returns {Audio}
+     * @param sound - Audio Object
+     * @param volume - volume for Audio Object
+     * @param preloader - preloader Object
+     * @param repeat - boolean
+     * @param type_voice - boolean
+     * @returns Audio
      */
     function loadAudio(sound, volume, preloader, repeat, type_voice) {
         var audio = new Audio(sound);
