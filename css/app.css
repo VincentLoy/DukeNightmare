@@ -22,6 +22,16 @@ header {
 .overlay.hidden {
     display: none;
 }
+
+.btn {
+    display: table;
+    margin: auto;
+}
+.btn iframe {
+    display: inline-block;
+    margin: 15px;
+}
+
 .container{
     width: 100%;
     height: 100%;
