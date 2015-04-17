@@ -116,8 +116,13 @@
         sound_SpeakPath3,
         sound_SpeakPath4,
         sound_SpeakPath5,
+        sound_SpeakPath6,
+        sound_SpeakPath7,
+        sound_SpeakPath8,
+        sound_SpeakPath9,
         sound_horrorPath1,
         sound_horrorPath2,
+        sound_diePath,
         sound_coin_path,
         sound_ambiance,
         sound_voice1,
@@ -125,12 +130,17 @@
         sound_voice3,
         sound_voice4,
         sound_voice5,
+        sound_voice6,
+        sound_voice7,
+        sound_voice8,
+        sound_voice9,
         sound_cry_path_1,
         sound_cry_path_2,
         sound_cry_1,
         sound_cry_2,
         sound_horror1,
         sound_horror2,
+        sound_die,
         sound_help_path,
         sound_help,
         sound_walking_path,
@@ -245,6 +255,7 @@
      */
     function gameOver() {
         stage.addChild(gameOverObject);
+        sound_die.play();
         end(false);
         canvas.onclick = rejouer;
     }
@@ -636,7 +647,15 @@
         sound_SpeakPath3 = "audio/voices/iamtheking.mp3";
         sound_SpeakPath4 = "audio/voices/timeto.mp3";
         sound_SpeakPath5 = "audio/voices/ballsofsteel.mp3";
+
+        sound_SpeakPath6 = "audio/voices/du_kickyourass.mp3";
+        sound_SpeakPath7 = "audio/voices/du_groovy.mp3";
+        sound_SpeakPath8 = "audio/voices/du_masochist.mp3";
+        sound_SpeakPath9 = "audio/voices/du_maxpain.mp3";
+
+
         sound_walking_path = "audio/step.mp3";
+        sound_diePath = "audio/die.mp3";
 
         sound_cry_path_1 = "audio/cry-1.mp3";
         sound_cry_path_2 = "audio/cry-2.mp3";
@@ -653,7 +672,14 @@
         sound_voice3 = loadAudio(sound_SpeakPath3, 0.2, preload, false, true);
         sound_voice4 = loadAudio(sound_SpeakPath4, 0.2, preload, false, true);
         sound_voice5 = loadAudio(sound_SpeakPath5, 0.2, preload, false, true);
+        sound_voice6 = loadAudio(sound_SpeakPath6, 0.2, preload, false, true);
+        sound_voice7 = loadAudio(sound_SpeakPath7, 0.2, preload, false, true);
+        sound_voice8 = loadAudio(sound_SpeakPath8, 0.2, preload, false, true);
+        sound_voice9 = loadAudio(sound_SpeakPath9, 0.2, preload, false, true);
+
+
         sound_walking = loadAudio(sound_walking_path, 0.2, preload, true, false);
+        sound_die = loadAudio(sound_diePath, 0.2, preload, false, false);
 
         sound_cry_1 = loadAudio(sound_cry_path_1, 0.5, preload, false, false);
         sound_cry_2 = loadAudio(sound_cry_path_2, 0.5, preload, false, false);
