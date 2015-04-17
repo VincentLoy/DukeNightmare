@@ -5,9 +5,13 @@
 (function () {
     'use strict';
     //variables des touches
-    var KEYCODE_SPACE = 32, KEYCODE_LEFT = 37, KEYCODE_RIGHT = 39, NB_ELT_TO_LOAD = 16,
+    var KEYCODE_SPACE = 32, KEYCODE_LEFT = 37, KEYCODE_RIGHT = 39, NB_ELT_TO_LOAD = 20,
         canvas,
         stage,
+        imgGameOver,
+        imgWin,
+        gameOverObject,
+        winObject,
     //variables des chemins des images
         imgHero, imgBg, imgPrincess,
     //variables des objets
@@ -189,11 +193,17 @@
     /**
      * end of game
      */
-    function end() {
+    function end(win) {
         play = false;
 
         hero.visible = false;
         stage.update();
+        canvas.onclick = rejouer;
+        if (win) {
+            stage.addChild(winObject);
+        } else {
+            stage.addChild(gameOverObject);
+        }
     }
 
     /**
@@ -214,8 +224,9 @@
         hero.visible = true;
         hero.x = 80;
         hero.y = 400;
-        stage.removeChild(gameTxt);
         stage.removeChild(door);
+        stage.removeChild(gameOverObject);
+        stage.removeChild(winObject);
         stage.removeChild(princess);
         play = true;
         jumping = false;
@@ -233,13 +244,8 @@
      * game over
      */
     function gameOver() {
-        gameTxt = new createjs.Text("Game Over\n\n", "36px Arial", "#000");
-        gameTxt.text += "Click to play again.";
-        gameTxt.textAlign = "center";
-        gameTxt.x = canvas.width / 2;
-        gameTxt.y = canvas.height / 4;
-        stage.addChild(gameTxt);
-        end();
+        stage.addChild(gameOverObject);
+        end(false);
         canvas.onclick = rejouer;
     }
 
@@ -393,7 +399,7 @@
         if (displayDoor) {
             //console.log(door.x + ' ' + door.y + ' ' + door.width);
             if (hero.y >= door.y+10 && hero.y <= (door.y+10 + door.height+10) && hero.x > door.x+10 && hero.x < (door.x+10 + door.width+10)) {
-                end();
+                end(true);
             }
         }
 
@@ -458,6 +464,10 @@
 
         //creation de la scene
         var bg = new createjs.Bitmap(imgBg), i, platform;
+        gameOverObject = new createjs.Bitmap(imgGameOver);
+        winObject = new createjs.Bitmap(imgWin);
+
+
         stage.addChild(bg);
 
         door = new createjs.Bitmap(imgDoor);
@@ -596,6 +606,14 @@
         imgHero = new Image();
         imgHero.src = "img/player2.png";
         preload.loadFile(imgHero.src);
+
+        imgGameOver = new Image();
+        imgGameOver.src = "img/gameover.png";
+        preload.loadFile(imgGameOver.src);
+
+        imgWin = new Image();
+        imgWin.src = "img/win.png";
+        preload.loadFile(imgWin.src);
 
         imgPrincess = new Image();
         imgPrincess.src = "img/princess.png";
