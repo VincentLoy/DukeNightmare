@@ -5,7 +5,7 @@
 (function () {
     'use strict';
     //variables des touches
-    var KEYCODE_SPACE = 32, KEYCODE_LEFT = 37, KEYCODE_RIGHT = 39, NB_ELT_TO_LOAD = 15,
+    var KEYCODE_SPACE = 32, KEYCODE_LEFT = 37, KEYCODE_RIGHT = 39, NB_ELT_TO_LOAD = 16,
         canvas,
         stage,
     //variables des chemins des images
@@ -32,24 +32,29 @@
     //variable pour rejouer
         play = true,
 
-        // Coins
+        door,
+        imgDoor,
+    // Coins
         coins_array,
         coinPath,
         coin,
+        coinsCounter = 0,
         coinsPositions = [
             {
-                x : 50,
-                y : 50
+                x : 800,
+                y : 349
             },
             {
-                x : 150,
-                y : 150
+                x : 75,
+                y : 145
             },
             {
-                x : 250,
-                y : 250
+                x : 350,
+                y : 216
             }
         ],
+        coinsToWin = coinsPositions.length,
+        displayDoor = false,
     //Positions des plateformes
         platforms,
         platforms_datas = [
@@ -108,6 +113,7 @@
         sound_SpeakPath4,
         sound_SpeakPath5,
         sound_horrorPath1,
+        sound_horrorPath2,
         sound_coin_path,
         sound_ambiance,
         sound_voice1,
@@ -120,6 +126,7 @@
         sound_cry_1,
         sound_cry_2,
         sound_horror1,
+        sound_horror2,
         sound_help_path,
         sound_help,
         sound_walking_path,
@@ -141,15 +148,15 @@
             e = window.event;
         }
         switch (e.keyCode) {
-        case KEYCODE_LEFT:
-            left = true;
-            break;
-        case KEYCODE_RIGHT:
-            right = true;
-            break;
-        case KEYCODE_SPACE:
-            jump();
-            break;
+            case KEYCODE_LEFT:
+                left = true;
+                break;
+            case KEYCODE_RIGHT:
+                right = true;
+                break;
+            case KEYCODE_SPACE:
+                jump();
+                break;
         }
     }
 
@@ -160,16 +167,16 @@
     function handleKeyUp(e) {
         if (!e) { e = window.event; }
         switch (e.keyCode) {
-        case KEYCODE_LEFT:
-            left = false;
-            break;
-        case KEYCODE_RIGHT:
-            right = false;
-            break;
-        case 83:
-            speak();
-            hero.gotoAndPlay('looking');
-            break;
+            case KEYCODE_LEFT:
+                left = false;
+                break;
+            case KEYCODE_RIGHT:
+                right = false;
+                break;
+            case 83:
+                speak();
+                hero.gotoAndPlay('looking');
+                break;
         }
 
         animPersonnage = false;
@@ -193,17 +200,31 @@
      * replay function
      */
     function rejouer() {
+
+        var i, j;
+        for (i = 0; i < coins_array.length; i += 1) {
+            stage.removeChild(coins_array[i]);
+        }
+
+        for (j = 0; j < triggers.length; j += 1) {
+            triggers[j].disabled = false;
+        }
+
         canvas.onclick = null;
         hero.visible = true;
         hero.x = 80;
         hero.y = 400;
         stage.removeChild(gameTxt);
+        stage.removeChild(door);
+        stage.removeChild(princess);
         play = true;
         jumping = false;
         inAir = false;
+        coinsCounter = 0;
         animPersonnage = false;
         vy = 0;
         vx = 0;
+        displayCoins();
         hero.gotoAndStop("idle");
         stage.update();
     }
@@ -306,7 +327,6 @@
             stage.addChild(princess);
 
             setTimeout(function () {
-                console.log('have to fade out princess');
                 createjs.Tween.get(princess).to({alpha: 0}, 1000);
             }, 3000);
         }
@@ -323,11 +343,9 @@
          * Collision w/ platforms
          */
         for (i = 0; i < platforms.length; i += 1) {
-            //while( i < platforms.length && inAir==true){ //la boucle while est plus efficace mais pas obligatoire pour vous
             if (hero.y >= platforms[i].y && hero.y <= (platforms[i].y + platforms[i].height) && hero.x > platforms[i].x && hero.x < (platforms[i].x + platforms[i].width)) {
                 hero.y = platforms[i].y; // remise en positin du héro sur la plateforme
                 vy = 0; // remise à zéro de la gravité
-
                 if (jumping === true) {
                     jumping = false;
                     hero.gotoAndStop("idle");
@@ -336,12 +354,7 @@
                     hero.gotoAndStop("idle");
                 }
                 inAir = false;
-
-            }/*else{
-             inAir = true;
-             }*/
-
-            //i++; //pour la boucle while
+            }
         }
 
         /**
@@ -349,18 +362,38 @@
          */
         var that;
         for (j = 0; j < triggers.length; j += 1) {
-
-            //while( i < platforms.length && inAir==true){ //la boucle while est plus efficace mais pas obligatoire pour vous
             if (hero.y >= triggers[j].y && hero.y <= (triggers[j].y + triggers[j].height) && hero.x > triggers[j].x && hero.x < (triggers[j].x + triggers[j].width)) {
                 that = triggers[j];
                 if (that.disabled === false) {
                     that.sound.play();
                     that.disabled = true;
                 }
-
                 if (that.special === 'loadPrincess') {
                     loadPrincess();
                 }
+            }
+        }
+
+        for (j = 0; j < coins_array.length; j += 1) {
+            if (hero.y >= coins_array[j].y && hero.y <= (coins_array[j].y + coins_array[j].height) && hero.x > coins_array[j].x && hero.x < (coins_array[j].x + coins_array[j].width)) {
+                that = coins_array[j];
+
+                coins_array.splice(j, 1);
+                coinsCounter += 1;
+                that.sound.play();
+                stage.removeChild(that);
+
+                if (coinsCounter === 3) {
+                    displayDoor = true;
+                    stage.addChild(door);
+                }
+            }
+        }
+
+        if (displayDoor) {
+            //console.log(door.x + ' ' + door.y + ' ' + door.width);
+            if (hero.y >= door.y+10 && hero.y <= (door.y+10 + door.height+10) && hero.x > door.x+10 && hero.x < (door.x+10 + door.width+10)) {
+                end();
             }
         }
 
@@ -377,6 +410,22 @@
             allCollisions();
         }
         stage.update();
+    }
+
+    function displayCoins() {
+        coins_array = [];
+        var i;
+        for (i = 0; i < coinsPositions.length; i += 1) {
+            coin = new Coin(coinPath);
+            coins_array.push(coin);
+            stage.addChild(coin);
+            coin.x = coinsPositions[i].x;
+            coin.y = coinsPositions[i].y;
+
+            coin.sound = sound_coin;
+
+            coin.gotoAndPlay('rotate');
+        }
     }
 
     /**
@@ -411,6 +460,12 @@
         var bg = new createjs.Bitmap(imgBg), i, platform;
         stage.addChild(bg);
 
+        door = new createjs.Bitmap(imgDoor);
+        door.x = 800;
+        door.y = 7;
+        door.width = door.getBounds().width;
+        door.height = door.getBounds().height;
+
         //insertion du heros
         hero = new Hero(imgHero);
         hero.x = 30;
@@ -438,6 +493,20 @@
                 y : 230,
                 sound : sound_help,
                 special : 'loadPrincess'
+            },
+            {
+                height : 150,
+                x : 800,
+                y : 230,
+                sound : sound_horror1,
+                special : null
+            },
+            {
+                height : 150,
+                x : 250,
+                y : 50,
+                sound : sound_horror2,
+                special : null
             }
         ];
 
@@ -461,21 +530,7 @@
             trigger.special = sounds_triggers[i].special;
         }
 
-        coins_array = [];
-        for (i = 0; i < coinsPositions.length; i += 1) {
-            coin = new Coin(coinPath);
-            coins_array.push(coin);
-            stage.addChild(coin);
-            coin.x = coinsPositions[i].x;
-            coin.y = coinsPositions[i].y;
-
-            coin.sound = sound_coin;
-
-            coin.gotoAndPlay('rotate');
-        }
-
-        console.log(triggers);
-
+        displayCoins();
 
 
         //register key functions
@@ -550,6 +605,10 @@
         coinPath.src = "img/coin.png";
         preload.loadFile(coinPath.src);
 
+        imgDoor = new Image();
+        imgDoor.src = "img/door.png";
+        preload.loadFile(imgDoor.src);
+
         // sounds
         sound_AmbiancePath = "audio/ambiance.mp3";
         sound_coin_path = "audio/get-coin.mp3";
@@ -565,6 +624,9 @@
         sound_cry_path_2 = "audio/cry-2.mp3";
         sound_help_path = "audio/help-me.mp3";
 
+        sound_horrorPath1 = "audio/screaming-horror.mp3";
+        sound_horrorPath2 = "audio/horror-cry.mp3";
+
         sound_ambiance = loadAudio(sound_AmbiancePath, 0.5, preload, true, false);
         sound_coin = loadAudio(sound_coin_path, 0.2, preload, false, false);
 
@@ -578,6 +640,11 @@
         sound_cry_1 = loadAudio(sound_cry_path_1, 0.5, preload, false, false);
         sound_cry_2 = loadAudio(sound_cry_path_2, 0.5, preload, false, false);
         sound_help = loadAudio(sound_help_path, 0.5, preload, false, false);
+
+        sound_horror1 = loadAudio(sound_horrorPath1, 0.1, preload, false, false);
+        sound_horror2 = loadAudio(sound_horrorPath2, 0.5, preload, false, false);
+
+
     }
 
     window.onload = init;

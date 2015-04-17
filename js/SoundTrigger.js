@@ -23,7 +23,7 @@
     SoundTrigger.prototype.makeShape = function () {
         //draw body
         var g = this.platformBody.graphics;
-        var debug = false;
+        var debug = true;
         if (debug) {
             g.setStrokeStyle(1);
             g.beginStroke("#d35400");
