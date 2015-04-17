@@ -5,7 +5,7 @@
 (function () {
     'use strict';
     //variables des touches
-    var KEYCODE_SPACE = 32, KEYCODE_LEFT = 37, KEYCODE_RIGHT = 39, NB_ELT_TO_LOAD = 25,
+    var KEYCODE_SPACE = 32, KEYCODE_LEFT = 37, KEYCODE_RIGHT = 39, NB_ELT_TO_LOAD = 25, overlay,
         canvas,
         stage,
         imgGameOver,
@@ -559,6 +559,8 @@
         loaded += 1;
         console.log('loading');
         if (loaded === NB_ELT_TO_LOAD) {
+            overlay = document.getElementById('overlay');
+            overlay.className = overlay.className + " hidden";
             console.log('loaded');
             jouer();
             sound_ambiance.play();

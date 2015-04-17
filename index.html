@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <title>EaselJS Example: Platformer Game</title>
+
+    <link rel="stylesheet" href="css/app.css"/>
     <script>
 
     </script>
@@ -10,21 +12,7 @@
 
 
     <style>
-        body {
-            background: #000;
-        }
-        h1{
-            font-family:'rotorcapregular';
-            color:red;
-        }
-        canvas {
-            display: block;
-            margin: auto;
-        }
 
-        header {
-            text-align: center;
-        }
     </style>
 </head>
 <body>
@@ -33,6 +21,14 @@
 </header>
 
 <canvas id="canvas" width="900" height="600"></canvas>
+
+<div class="container overlay" id="overlay">
+    <div class="part"></div>
+    <div class="part"></div>
+    <div class="part"></div>
+    <div class="part"></div>
+    <div class="part"></div>
+</div>
 
 <script src="js/lib/easeljs-0.8.0.min.js"></script>
 <script src="js/lib/tweenjs-0.6.0.min.js"></script>

@@ -1,0 +1,112 @@
+body {
+    background: #000;
+}
+h1{
+    font-family:'rotorcapregular';
+    color:red;
+}
+canvas {
+    display: block;
+    margin: auto;
+}
+
+header {
+    text-align: center;
+}
+
+.overlay{
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+.overlay.hidden {
+    display: none;
+}
+.container{
+    width: 100%;
+    height: 100%;
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+    -webkit-align-items: center;
+    -ms-flex-align: center;
+    align-items: center;
+    -webkit-box-pack: center;
+    -webkit-justify-content: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    background: #111111;
+}
+.container .part {
+    width: 40px;
+    height: 40px;
+    margin-left: 45px;
+    -webkit-transform: rotate(45deg);
+    -ms-transform: rotate(45deg);
+    transform: rotate(45deg);
+    background: #232323;
+    border-radius: 4px;
+    border: 2px solid #fff;
+    -webkit-transition: background 100ms linear;
+    transition: background 100ms linear;
+    -webkit-animation: change 950ms linear infinite;
+    animation: change 950ms linear infinite;
+}
+.container .part:nth-child(1) {
+    -webkit-animation-delay: 100ms;
+    animation-delay: 100ms;
+}
+.container .part:nth-child(2) {
+    -webkit-animation-delay: 200ms;
+    animation-delay: 200ms;
+}
+.container .part:nth-child(3) {
+    -webkit-animation-delay: 300ms;
+    animation-delay: 300ms;
+}
+.container .part:nth-child(4) {
+    -webkit-animation-delay: 400ms;
+    animation-delay: 400ms;
+}
+.container .part:nth-child(5) {
+    -webkit-animation-delay: 500ms;
+    animation-delay: 500ms;
+}
+@-webkit-keyframes change {
+    0% {
+        border-radius: 4px;
+    }
+    17.5% {
+        border-radius: 4px;
+    }
+    50% {
+        border-radius: 100%;
+        background: rgba(255,255,255,0.4);
+    }
+    93.5% {
+        border-radius: 4px;
+    }
+    100% {
+        border-radius: 4px;
+    }
+}
+@keyframes change {
+    0% {
+        border-radius: 4px;
+    }
+    17.5% {
+        border-radius: 4px;
+    }
+    50% {
+        border-radius: 100%;
+        background: rgba(255,255,255,0.4);
+    }
+    93.5% {
+        border-radius: 4px;
+    }
+    100% {
+        border-radius: 4px;
+    }
+}
