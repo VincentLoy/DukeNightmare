@@ -5,7 +5,7 @@
 (function () {
     'use strict';
     //variables des touches
-    var KEYCODE_SPACE = 32, KEYCODE_LEFT = 37, KEYCODE_RIGHT = 39, NB_ELT_TO_LOAD = 13,
+    var KEYCODE_SPACE = 32, KEYCODE_LEFT = 37, KEYCODE_RIGHT = 39, NB_ELT_TO_LOAD = 15,
         canvas,
         stage,
     //variables des chemins des images
@@ -31,6 +31,25 @@
         loaded = 0,
     //variable pour rejouer
         play = true,
+
+        // Coins
+        coins_array,
+        coinPath,
+        coin,
+        coinsPositions = [
+            {
+                x : 50,
+                y : 50
+            },
+            {
+                x : 150,
+                y : 150
+            },
+            {
+                x : 250,
+                y : 250
+            }
+        ],
     //Positions des plateformes
         platforms,
         platforms_datas = [
@@ -89,6 +108,7 @@
         sound_SpeakPath4,
         sound_SpeakPath5,
         sound_horrorPath1,
+        sound_coin_path,
         sound_ambiance,
         sound_voice1,
         sound_voice2,
@@ -104,6 +124,7 @@
         sound_help,
         sound_walking_path,
         sound_walking,
+        sound_coin,
         trigger,
         triggers,
         sounds_triggers;
@@ -420,16 +441,6 @@
             }
         ];
 
-        //une plateforme
-        /* unePlateform = new Platform(300,20);
-
-         stage.addChild(unePlateform);
-         unePlateform.x = 40;
-         unePlateform.y = 460;
-         */
-
-
-
         //creation des plateformes
         platforms = [];
         for (i = 0; i < platforms_datas.length; i += 1) {
@@ -448,6 +459,19 @@
             trigger.x = sounds_triggers[i].x;
             trigger.y = sounds_triggers[i].y;
             trigger.special = sounds_triggers[i].special;
+        }
+
+        coins_array = [];
+        for (i = 0; i < coinsPositions.length; i += 1) {
+            coin = new Coin(coinPath);
+            coins_array.push(coin);
+            stage.addChild(coin);
+            coin.x = coinsPositions[i].x;
+            coin.y = coinsPositions[i].y;
+
+            coin.sound = sound_coin;
+
+            coin.gotoAndPlay('rotate');
         }
 
         console.log(triggers);
@@ -522,8 +546,13 @@
         imgPrincess.src = "img/princess.png";
         preload.loadFile(imgPrincess.src);
 
+        coinPath = new Image();
+        coinPath.src = "img/coin.png";
+        preload.loadFile(coinPath.src);
+
         // sounds
         sound_AmbiancePath = "audio/ambiance.mp3";
+        sound_coin_path = "audio/get-coin.mp3";
 
         sound_SpeakPath1 = "audio/voices/vacation.mp3";
         sound_SpeakPath2 = "audio/voices/du_letsrock.mp3";
@@ -537,6 +566,7 @@
         sound_help_path = "audio/help-me.mp3";
 
         sound_ambiance = loadAudio(sound_AmbiancePath, 0.5, preload, true, false);
+        sound_coin = loadAudio(sound_coin_path, 0.2, preload, false, false);
 
         sound_voice1 = loadAudio(sound_SpeakPath1, 0.2, preload, false, true);
         sound_voice2 = loadAudio(sound_SpeakPath2, 0.2, preload, false, true);

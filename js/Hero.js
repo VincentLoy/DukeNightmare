@@ -13,7 +13,7 @@
 // constructors:
     Hero.prototype.Sprite_initialize = Hero.prototype.initialize; //unique to avoid overiding base class
 // public methods:
-    Hero.prototype.initialize = function(imgHero) {
+    Hero.prototype.initialize = function (imgHero) {
         spriteSheet  = new createjs.SpriteSheet({
             images: [imgHero],
             frames: {width: heroWidth, height: heroHeight, regX: heroRegX, regY: heroRegY},
